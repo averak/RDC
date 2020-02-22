@@ -12,7 +12,7 @@
 $ git clone https://github.com/AjxLab/RDC
 $ cd RDC/joke-engine
 ```
-### Install pythno libs
+### Install python libs
 ```sh
 $ pip install -r lib/requirements.txt
 ```
