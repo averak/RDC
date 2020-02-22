@@ -1,11 +1,21 @@
 # ダジャレ判定エンジン
 
+
+## Requiremenst
+- Python 3
+
+
 ## Installation
+### Clone this repo
 ```sh
-# clone this repo
 $ git clone https://github.com/AjxLab/RDC
 $ cd RDC/joke-engine
-
-# install python libs
+```
+### Install pythno libs
+```sh
 $ pip install -r lib/requirements.txt
 ```
+
+
+## Author
+- Tatsuya Abe
