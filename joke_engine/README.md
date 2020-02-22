@@ -3,6 +3,7 @@
 
 ## Requiremenst
 - Python 3
+- Django 3.0.3
 
 
 ## Installation
