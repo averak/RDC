@@ -7,7 +7,7 @@ class Joke(models.Model):
 
     # joke  ：ダジャレ１文
     # author：人物名（NULL許容）
-    # score ：スコア（0.0~100.0）
+    # score ：スコア（0.0~5.0）
     # date  ：作成日（変更不可）
 
     joke = models.CharField(
@@ -20,7 +20,7 @@ class Joke(models.Model):
     score = models.FloatField(
         default=0,
         validators=[MinValueValidator(0.0),
-                    MaxValueValidator(100.0)]
+                    MaxValueValidator(5.0)]
     )
     date = models.DateTimeField(
         auto_now_add=True
