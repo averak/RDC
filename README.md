@@ -4,3 +4,16 @@
 
 
 ![](img/RDC.png)
+
+
+## Description
+This project's objective is to spread puns posted on RDC official slack's #ダジャレ channel through an official [Twitter account](https://twitter.com/rits_dajare).<br>
+Automatically determines whether a posted sentence is pun, and if true, gives a star with the rating engine.
+
+
+## Wiki
+Please look at the [documents](https://github.com/AjxLab/RDC/wiki).
+
+
+## Contributing
+Bug reports and pull requests are welcome on GitHub at [https://github.com/AjxLab/RDC](https://github.com/AjxLab/RDC).
