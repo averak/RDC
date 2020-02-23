@@ -18,7 +18,7 @@ class Joke(models.Model):
         null=True
     )
     score = models.FloatField(
-        default=0,
+        default=0.0,
         validators=[MinValueValidator(0.0),
                     MaxValueValidator(5.0)]
     )
