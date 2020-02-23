@@ -4,6 +4,7 @@ from rest_framework import generics
 from .serializers import JokeSerializer
 from .models import Joke
 
+
 class JokeListView(ListView):
     ## -----*----- Joke一覧を表示 -----*----- ##
     # method：GET
@@ -12,7 +13,7 @@ class JokeListView(ListView):
     template_name = 'joke_list.html'
 
 
-class JokeAPIView(generics.ListAPIView):
+class JokeSearch(generics.ListAPIView):
     ## -----*----- Jokeを検索 -----*----- ##
     # method：GET
 
