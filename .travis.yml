@@ -7,4 +7,4 @@ install:
   - pip install -r lib/requirements.txt
 
 script:
-  - python manage.py test
+  - cd joke_engine/ ; python manage.py test
