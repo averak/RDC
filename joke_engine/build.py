@@ -23,9 +23,13 @@ def fetch_jokes(delay=3.0, depth_limit=None):
         ret.append({})
 
         ret[-1]['joke'] = el.css('a').inner_text()
-        ret[-1]['score'] = float(re.match('\d.\d', el.css('.ListWorkScore').inner_text()).group())
-        print(ret[-1])
+        ret[-1]['score'] = float(re.match(r'\d.\d', el.css('.ListWorkScore').inner_text()).group())
+        ret[-1]['is_joke'] = True
+
+    return ret
 
 
 if __name__ == '__main__':
-    fetch_jokes()
+    jokes = fetch_jokes()
+    json.dump(jokes, open('jokes.json','w'), indent=4)
+
