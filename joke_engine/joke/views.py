@@ -1,18 +1,28 @@
 from django.shortcuts import render
 from django.http.response import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.generic import ListView
 from rest_framework import generics
 from rest_framework import viewsets
-from .serializers import JokeSerializer
-from .models import Joke
 import json
 
 
-class JokeSearch(generics.ListAPIView):
-    ## -----*----- Jokeを検索 -----*----- ##
-    # method：GET
+def joke_judge(request):
+    ## -----*----- ダジャレかどうか判定 -----*----- ##
+    '''
+    method：GET
+    query：
+        sentence: String,
+    response：
+        {
+            is_joke: Boolean
+        }
+    '''
 
-    queryset = Joke.objects.all()
-    serializer_class = JokeSerializer
+    if request.method == 'POST':
+        return JsonResponse({})
 
+    # パラメータを辞書で取得
+    params = json.loads(request.body)
+    print(params)
+
+    ret = {"data": "param1"}
+    return JsonResponse(ret)

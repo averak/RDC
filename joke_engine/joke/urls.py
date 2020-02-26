@@ -1,10 +1,8 @@
 from django.urls import path
-
-from .views import JokeListView
-from .views import JokeSearch
+from joke import views
 
 
 urlpatterns = [
-    path('list/', JokeListView.as_view(), name='home'),
-    path('search/', JokeSearch.as_view())
+    path('judge/', views.joke_judge),
+    #path('evaluate/', JokeSearch.as_view())
 ]
