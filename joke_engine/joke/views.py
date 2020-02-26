@@ -32,8 +32,15 @@ def joke_judge(request):
     if not 'joke' in params:
         return JsonResponse({})
 
+
+    # =======================================
+
+    # =======================================
+
+
     ret = {'is_joke': True}
     return JsonResponse(ret)
+
 
 
 def joke_evaluate(request):
@@ -64,7 +71,11 @@ def joke_evaluate(request):
     if not 'joke' in params:
         return JsonResponse({})
 
-    print(params)
+
+    # =======================================
+
+    # =======================================
+
 
     ret = {'score': 5.0}
     return JsonResponse(ret)
