@@ -8,7 +8,12 @@ import json
 def joke_judge(request):
     ## -----*----- ダジャレかどうか判定 -----*----- ##
     '''
-    method：GET
+    uri：
+        /joke/judge
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
     query：
         sentence: String,
     response：
