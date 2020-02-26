@@ -1,3 +1,5 @@
+<div align="center">
+
 # 立命館ダジャレサークル
 
 [![Build Status](https://api.travis-ci.org/AjxLab/RDC.svg)](https://travis-ci.org/AjxLab/RDC)
@@ -5,7 +7,7 @@
 
 ![](https://raw.githubusercontent.com/Ritsumeikan-Dajare-Circle/media/d72e2dbf8459689384af0de9e8b8d3e2d36a9cd2/logo/source.svg?sanitize=true)
 
-![](img/RDC.png)
+</div>
 
 ## Description
 
