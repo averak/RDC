@@ -21,8 +21,8 @@ def joke_judge(request):
         return JsonResponse({})
 
     # パラメータを辞書で取得
-    params = json.loads(request.body)
+    params = request.GET
     print(params)
 
-    ret = {"data": "param1"}
+    ret = {'is_joke': True}
     return JsonResponse(ret)
