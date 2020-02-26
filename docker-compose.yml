@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  joke_engine:
+    restart: always
+    build: ./joke_engine
+    ports: 8000:8000
+    container_name: joke_engine'
+    volumes:
+      - ./joke_engine
