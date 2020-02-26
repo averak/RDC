@@ -31,7 +31,6 @@ def is_joke(sentence, n=3):
     ## -----*----- ダジャレ判定 -----*----- ##
     # カタカナに変換
     katakana = to_katakana(sentence)
-    print(katakana)
     # カタカナの長さ
     l_katakana = len(katakana)
 
@@ -51,3 +50,4 @@ if __name__ == '__main__':
     print(is_joke('つくねがくっつくね'))
     print(is_joke('ソースを読んで納得したプログラマ「そーすね」'))
     print(is_joke('布団が吹っ飛んだ'))
+    print(is_joke('太古の太閤が太鼓で対抗'))
