@@ -1,16 +1,12 @@
 from django.shortcuts import render
+from django.http.response import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import ListView
 from rest_framework import generics
+from rest_framework import viewsets
 from .serializers import JokeSerializer
 from .models import Joke
-
-
-class JokeListView(ListView):
-    ## -----*----- Joke一覧を表示 -----*----- ##
-    # method：GET
-
-    model = Joke
-    template_name = 'joke_list.html'
+import json
 
 
 class JokeSearch(generics.ListAPIView):
@@ -19,3 +15,4 @@ class JokeSearch(generics.ListAPIView):
 
     queryset = Joke.objects.all()
     serializer_class = JokeSerializer
+
