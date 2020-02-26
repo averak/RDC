@@ -1,5 +1,5 @@
 joke_engine/__pycache__
 joke/__pycache__
 joke/migrations
-db.splite3
+db.sqlite3
 .DS_Store
