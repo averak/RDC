@@ -46,6 +46,8 @@ def fetch_jokes(delay=3.0, depth_limit=None):
 
 
 if __name__ == '__main__':
-    jokes = fetch_jokes(0.5)
-    json.dump(jokes, open('jokes.json','w'), indent=4)
+    # ダジャレ一覧を取得
+    if 'fetch' in sys.argv:
+        jokes = fetch_jokes(0.5)
+        json.dump(jokes, open('jokes.json','w'), indent=4)
 
