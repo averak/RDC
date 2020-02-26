@@ -2,7 +2,6 @@ joke_engine/__pycache__
 joke/__pycache__
 joke/migrations
 db.sqlite3
-data/jokes.json
-data/not-jokes.json
+data/
 .DS_Store
 
