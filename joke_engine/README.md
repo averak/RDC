@@ -11,6 +11,10 @@
 ```sh
 $ python build.py fetch
 ```
+### Build Teacher Data
+```sh
+$ python build.py teach
+```
 
 
 ## Installation
