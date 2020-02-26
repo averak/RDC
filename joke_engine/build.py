@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, sys, re
 import json
+import time
 import pycrawl
 
 
@@ -19,17 +20,30 @@ def fetch_jokes(delay=3.0, depth_limit=None):
 
     ret = []
 
-    for el in jokes:
-        ret.append({})
+    cnt = 0
+    while True:
+        for el in jokes:
+            ret.append({})
 
-        ret[-1]['joke'] = el.css('a').inner_text()
-        ret[-1]['score'] = float(re.match(r'\d.\d', el.css('.ListWorkScore').inner_text()).group())
-        ret[-1]['is_joke'] = True
+            ret[-1]['joke'] = el.css('a').inner_text()
+            ret[-1]['score'] = float(re.match(r'\d.\d', el.css('.ListWorkScore').inner_text()).group())
+            ret[-1]['is_joke'] = True
+
+        if depth_limit != None:
+            if cnt > depth_limit:
+                break
+
+        # Next Page
+        agent.submit(id='FormButtonNext')
+        cnt += 1
+        time.sleep(delay)
+
+        print(ret)
 
     return ret
 
 
 if __name__ == '__main__':
-    jokes = fetch_jokes()
+    jokes = fetch_jokes(0.5, 500)
     json.dump(jokes, open('jokes.json','w'), indent=4)
 
