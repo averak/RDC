@@ -9,3 +9,15 @@ services:
     container_name: joke_engine
     volumes:
       - ./joke_engine:/app
+
+  slack_monitor:
+    restart: always
+    build: ./slack_monitor
+    ports:
+      - 3000:3000
+    working_dir: /app
+    container_name: slack_monitor
+    command: ["sh", "-c", "yarn && yarn start"]
+    volumes:
+      - ./slack_monitor:/app
+      - /app/node_modules
