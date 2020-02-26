@@ -1,2 +1,3 @@
 Django==3.0.3
 djangorestframework==3.11.0
+pycrawl==1.1.0
