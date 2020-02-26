@@ -1,21 +1,81 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.http.response import JsonResponse
 from rest_framework import generics
-from .serializers import JokeSerializer
-from .models import Joke
+from rest_framework import viewsets
+import json
 
 
-class JokeListView(ListView):
-    ## -----*----- Joke一覧を表示 -----*----- ##
-    # method：GET
+def joke_judge(request):
+    ## -----*----- ダジャレかどうか判定 -----*----- ##
+    '''
+    uri：
+        /joke/judge
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        joke: String,
+    response：
+        {
+            is_joke: Boolean
+        }
+    '''
 
-    model = Joke
-    template_name = 'joke_list.html'
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({})
+    # クエリを指定されていない -> return {}
+    if not 'joke' in params:
+        return JsonResponse({})
 
 
-class JokeSearch(generics.ListAPIView):
-    ## -----*----- Jokeを検索 -----*----- ##
-    # method：GET
+    # =======================================
 
-    queryset = Joke.objects.all()
-    serializer_class = JokeSerializer
+    # =======================================
+
+
+    ret = {'is_joke': True}
+    return JsonResponse(ret)
+
+
+
+def joke_evaluate(request):
+    ## -----*----- ダジャレを評価 -----*----- ##
+    # 1.0 ~ 5.0で評価する
+    '''
+    uri：
+        /joke/evaluate
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        joke: String,
+    response：
+        {
+            score: Number
+        }
+    '''
+
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({})
+    # クエリを指定されていない -> return {}
+    if not 'joke' in params:
+        return JsonResponse({})
+
+
+    # =======================================
+
+    # =======================================
+
+
+    ret = {'score': 5.0}
+    return JsonResponse(ret)
