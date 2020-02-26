@@ -11,21 +11,43 @@ def to_katakana(sentence):
     katakana = ''
     for token in t.tokenize(sentence):
         s = token.reading
-        if re.match('^[ァ-ンヴー]*$', s) != None:
+        if s == '*' and re.match('[\u3041-\u309Fー]+', token.base_form) != None:
+            s = token.base_form
+        if re.match('^[ぁ-んァ-ンヴー]*$', s) != None:
             katakana += s
+
+    katakana = katakana.replace('ッ', '')
+    pair = [
+        'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ',
+        'アイウエオツヤユヨワアイウエオツヤユヨワ'
+    ]
+    for i in range(len(pair[0])):
+        katakana = katakana.replace(pair[0][i], pair[1][i])
 
     return katakana
 
 
-def is_joke(sentence):
+def is_joke(sentence, n=3):
     ## -----*----- ダジャレ判定 -----*----- ##
     # カタカナに変換
     katakana = to_katakana(sentence)
+    print(katakana)
     # カタカナの長さ
     l_katakana = len(katakana)
-    print(re.match('^[ァ-ンヴー]*$', katakana).group())
-    print(l_katakana)
+
+    # 1文字ずつずらしてn文字の要素を作成
+    col = []
+    for i in range(l_katakana-n+1):
+        col.append(katakana[i:(i+n)])
+
+    if len(set(col)) != len(col):
+        return True
+    else:
+        return False
+
 
 if __name__ == '__main__':
-    print(to_katakana('遠距離恋愛'))
-    is_joke('遠距離恋愛')
+    print(is_joke('遠距離恋愛'))
+    print(is_joke('つくねがくっつくね'))
+    print(is_joke('ソースを読んで納得したプログラマ「そーすね」'))
+    print(is_joke('布団が吹っ飛んだ'))
