@@ -15,18 +15,23 @@ def joke_judge(request):
     headers：
         'Content-Type':'application/json'
     query：
-        sentence: String,
+        joke: String,
     response：
         {
             is_joke: Boolean
         }
     '''
 
-    if request.method == 'POST':
-        return JsonResponse({})
-
     # パラメータを辞書で取得
     params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({})
+    # クエリを指定されていない -> return {}
+    if not 'joke' in params:
+        return JsonResponse({})
+
     print(params)
 
     ret = {'is_joke': True}

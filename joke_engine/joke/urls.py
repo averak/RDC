@@ -4,5 +4,5 @@ from joke import views
 
 urlpatterns = [
     path('judge/', views.joke_judge),
-    #path('evaluate/', JokeSearch.as_view())
+    #path('evaluate/', views.joke_evaluate),
 ]
