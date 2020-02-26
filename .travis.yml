@@ -1,0 +1,15 @@
+language: python
+
+python: "3.7"
+
+install:
+  - cd joke_engine
+  - pip install -r lib/requirements.txt
+
+script:
+  - python manage.py test
+
+branches:
+  only:
+    - master
+    - develop
