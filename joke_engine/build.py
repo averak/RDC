@@ -53,8 +53,17 @@ if __name__ == '__main__':
         jokes = fetch_jokes(0.5)
         json.dump(jokes, open('data/raw/jokes.json','w'), indent=4)
 
-    if 'json' in sys.argv:
-        files = glob.glob('data/raw/*.json')
-        print(files)
-        #json.load(open('data/raw/*.json', 'r'))
+    # 教師データをビルド
+    if 'teach' in sys.argv:
+        for file in glob.glob('data/raw/*.json'):
+            # カタカナに変換
+            jokes = [
+                     {
+                         'joke': joke['joke'],
+                         'score': joke['score'],
+                         'is_joke': joke['is_joke']
+                     }  for joke in json.load(open(file, 'r'))
+            ]
+            print(jokes)
+
 
