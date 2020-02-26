@@ -1,5 +1,6 @@
 # 立命館ダジャレサークル
 
+[![Build Status](https://api.travis-ci.org/AjxLab/RDC.svg)](https://travis-ci.org/AjxLab/RDC)
 [![Twitter](https://img.shields.io/badge/Twitter-%40rits_dajare-blue?style=flat-square&logo=twitter)](https://twitter.com/rits_dajare)
 
 
