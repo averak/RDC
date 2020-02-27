@@ -20,3 +20,13 @@ print('''
     - ダジャレ：{}
     - レスポンス：{}
 '''.format(joke, res_json))
+
+
+# ダジャレ評価API
+res = requests.get(url + '/evaluate?joke=%s' % joke)
+res_json = json.loads(res.text)
+print('''
+ダジャレ評価
+    - ダジャレ：{}
+    - レスポンス：{}
+'''.format(joke, res_json))
