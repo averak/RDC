@@ -6,6 +6,17 @@
 - Django 3.0.3
 
 
+## Usage
+### Fetch All Jokes Data
+```sh
+$ python build.py fetch
+```
+### Build Teacher Data
+```sh
+$ python build.py teach
+```
+
+
 ## Installation
 ### Clone this repo
 ```sh

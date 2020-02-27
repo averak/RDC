@@ -3,6 +3,7 @@ from django.http.response import JsonResponse
 from rest_framework import generics
 from rest_framework import viewsets
 import json
+import engine
 
 
 def joke_judge(request):
@@ -32,13 +33,7 @@ def joke_judge(request):
     if not 'joke' in params:
         return JsonResponse({})
 
-
-    # =======================================
-
-    # =======================================
-
-
-    ret = {'is_joke': True}
+    ret = {'is_joke': engine.is_joke(params['joke'])}
     return JsonResponse(ret)
 
 
