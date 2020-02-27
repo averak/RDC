@@ -5,7 +5,7 @@ import time
 import glob
 import pycrawl
 from tqdm import tqdm
-from model import Evaluate
+from engine import Evaluate
 
 
 
@@ -57,5 +57,4 @@ if __name__ == '__main__':
     # 教師データをビルド
     if 'train' in sys.argv:
         Evaluate()
-
 
