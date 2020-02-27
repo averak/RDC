@@ -5,6 +5,7 @@ import time
 import glob
 import pycrawl
 from tqdm import tqdm
+from model import Evaluate
 
 
 
@@ -54,16 +55,7 @@ if __name__ == '__main__':
         json.dump(jokes, open('data/raw/jokes.json','w'), indent=4)
 
     # 教師データをビルド
-    if 'teach' in sys.argv:
-        for file in glob.glob('data/raw/*.json'):
-            # カタカナに変換
-            jokes = [
-                     {
-                         'joke': joke['joke'],
-                         'score': joke['score'],
-                         'is_joke': joke['is_joke']
-                     }  for joke in json.load(open(file, 'r'))
-            ]
-            print(jokes)
+    if 'train' in sys.argv:
+        Evaluate()
 
 
