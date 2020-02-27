@@ -138,7 +138,7 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         score = self.__model.predict(np.array([vec]))
-        return 5.0 / (1.0 +  math.e**(-(25*score[0][0]-13)))
+        return 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
         #return score[0][0] * 5.0
 
 
@@ -222,6 +222,8 @@ if __name__ == '__main__':
     for joke in jokes:
         score = model.predict(joke)
         star =  '★' * int(score)
+        if score - int(score) > 0.5:
+            star += '★'
         star += '☆' * (5-len(star))
         judge = is_joke(joke)
 

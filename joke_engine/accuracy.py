@@ -37,6 +37,8 @@ if 'evaluate' in sys.argv:
     for joke in tqdm(jokes):
         score = model.predict(joke['joke'])
         star =  '★' * int(score)
+        if score - int(score) > 0.5:
+            star += '★'
         star += '☆' * (5-len(star))
         judge = engine.is_joke(joke['joke'])
 
