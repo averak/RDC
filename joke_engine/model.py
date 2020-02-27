@@ -10,7 +10,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
 
 
-class Model(object):
+class Evaluate(object):
     '''
     ダジャレを評価するモデル
     character-level CNNを用いて評価
@@ -31,29 +31,36 @@ class Model(object):
             self.load_model()
 
 
-    def __build(self, embed_size=32, max_length=30, filter_num=64, learning_rate=0.0005):
+    def __build(self, embed_size=128, max_length=100, filter_sizes=(2, 3, 4, 5), filter_num=64, learning_rate=0.0005):
         ## -----*----- モデルをビルド -----*----- ##
-        # モデルの定義
-        model = Sequential([
-            Input(shape=(max_length,)),
-            Embedding(0xffff, embed_size,embeddings_regularizer=regularizers.l1(0.01)),
-            Reshape((max_length, embed_size, 1)),
-            Conv2D(filter_num, (2, embed_size), activation="relu", data_format='channels_first'),
-            MaxPooling2D(pool_size=(max_length - 1, 1)),
-            Conv2D(filter_num, (3, embed_size), activation="relu"),
-            MaxPooling2D(pool_size=(max_length - 2, 1)),
-            Conv2D(filter_num, (4, embed_size), activation="relu"),
-            MaxPooling2D(pool_size=(max_length - 3, 1)),
-            Conv2D(filter_num, (5, embed_size), activation="relu"),
-            MaxPooling2D(pool_size=(max_length - 4, 1)),
-            #Concatenate(),
-            #Reshape((filter_num * len(filter_sizes),)),
-            Flatten(),
-            Dense(32, activation="relu"),
-            #Dropout(0.5),
-            BatchNormalization(),
-            Dense(1, activation='sigmoid')
-        ])
+        # Input Layer
+        input_ts = Input(shape=(max_length, ))
+        # Embedding 各文字をベクトル変換
+        emb = Embedding(0xffff, embed_size)(input_ts)
+        emb_ex = Reshape((max_length, embed_size, 1))(emb)
+        # 各カーネルサイズで畳み込みをかける．
+
+        convs = []
+        # Conv2D
+        for filter_size in filter_sizes:
+            conv = Conv2D(filter_num, (filter_size, embed_size), activation='relu')(emb_ex)
+            pool = MaxPooling2D((max_length - filter_size + 1 , 1))(conv)
+            convs.append(pool)
+        # ConcatenateでConv2Dを結合
+        convs_merged = Concatenate()(convs)
+        # Reshape
+        reshape = Reshape((filter_num * len(filter_sizes),))(convs_merged)
+        # Dense
+        fc1 = Dense(64, activation='relu')(reshape)
+        bn1 = BatchNormalization()(fc1)
+        do1 = Dropout(0.5)(bn1)
+        fc2 = Dense(1, activation='sigmoid')(do1)
+
+        # Model generate
+        model = Model(
+            inputs=[input_ts],
+            outputs=[fc2]
+        )
 
         # モデルをコンパイル
         model.compile(
@@ -65,9 +72,16 @@ class Model(object):
         return model
 
 
-    def __train(self, x, y):
+    def __train(self, x, y, batch_size=1000, epoch_count=1, max_length=30):
         ## -----*----- 学習 -----*----- ##
-        return
+        self.__model.fit(
+            x, y,
+            nb_epoch=epoch_count,
+            batch_size=batch_size,
+            verbose=1,
+            validation_split=0.2,
+            shuffle=True,
+        )
 
 
     def load_model(self):
@@ -78,5 +92,5 @@ class Model(object):
 
 
 if __name__ == '__main__':
-    model = Model()
+    model = Evaluate()
 
