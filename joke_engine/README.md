@@ -11,9 +11,9 @@
 ```sh
 $ python build.py fetch
 ```
-### Build Teacher Data
+### Train
 ```sh
-$ python build.py teach
+$ python build.py train
 ```
 
 

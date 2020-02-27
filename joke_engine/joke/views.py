@@ -6,6 +6,9 @@ import json
 import engine
 
 
+model = engine.Evaluate(False)
+
+
 def joke_judge(request):
     ## -----*----- ダジャレかどうか判定 -----*----- ##
     '''
@@ -66,11 +69,5 @@ def joke_evaluate(request):
     if not 'joke' in params:
         return JsonResponse({})
 
-
-    # =======================================
-
-    # =======================================
-
-
-    ret = {'score': 5.0}
+    ret = {'score': model.predict(params['joke'])}
     return JsonResponse(ret)
