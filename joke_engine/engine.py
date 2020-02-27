@@ -221,6 +221,9 @@ if __name__ == '__main__':
         score = model.predict(joke)
         star =  '★' * int(score)
         star += '☆' * (5-len(star))
-        print('{}：\n    - ダジャレ判定：{}\n    - ダジャレ評価：{} ({})'\
-              .format(joke, is_joke(joke), star, score))
+        judge = is_joke(joke)
+
+        print('{}\n    - ダジャレ判定：{}'.format(joke, judge))
+        if judge:
+            print('    - ダジャレ評価：{} ({})'.format(star, score))
 
