@@ -19,8 +19,11 @@ for file in glob.glob('data/raw/*.json'):
 # 計測
 result = 0  # 正解数
 for joke in tqdm(jokes):
-    if joke['is_joke'] == engine.is_joke(joke['joke']):
-        result += 1
+    try:
+        if joke['is_joke'] == engine.is_joke(joke['joke']):
+            result += 1
+    except:
+        raise ValueError('判定に失敗：%s' % joke['joke'])
 
 
 print('精度：%f' % (result / len(jokes)))

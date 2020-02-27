@@ -6,8 +6,12 @@ from janome.tokenizer import Tokenizer
 t = Tokenizer()
 
 
-def to_katakana(sentence):
+def to_katakana(sentence, rm_ltu=False):
     ## -----*----- カタカナ変換 -----*----- ##
+    '''
+    sentence：判定対象の文
+    rm_ltu：「っ」を削除するかどうか
+    '''
     katakana = ''
 
     # 形態素解析
@@ -16,13 +20,15 @@ def to_katakana(sentence):
 
         if s == '*':
             # 読みがわからないトークン
-            if re.match('[ぁ-んァ-ンー]+', token.surface) != None:
+            if re.match('[ぁ-んァ-ンー]', token.surface) != None:
                 katakana += token.surface
         else:
             # 読みがわかるトークン
             katakana += s
 
-    katakana = katakana.replace('ッ', '')
+    if rm_ltu:
+        katakana = katakana.replace('ッ', '')
+
     pair = [
         'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ',
         'アイウエオツヤユヨワアイウエオツヤユヨワ'
@@ -33,10 +39,14 @@ def to_katakana(sentence):
     return katakana
 
 
-def is_joke(sentence, n=3):
+def is_joke(sentence, n=3, rm_ltu=False):
     ## -----*----- ダジャレ判定 -----*----- ##
-    # カタカナに変換
-    katakana = to_katakana(sentence)
+    '''
+    sentence：判定対象の文
+    n：文字を分割する単位
+    rm_ltu：「っ」を削除するかどうか
+    '''
+    katakana = to_katakana(sentence, rm_ltu)
 
     # 1文字ずつずらしてn文字の要素を作成
     col = []
@@ -46,6 +56,15 @@ def is_joke(sentence, n=3):
     if len(set(col)) != len(col):
         return True
     else:
+        if 'ー' in katakana:
+            return is_joke(katakana.replace('ー', ''))
+        if 'っ' in sentence or 'ッ' in sentence:
+            if not rm_ltu:
+                if is_joke(sentence, rm_ltu=True):
+                    return True
+                else:
+                    return is_joke(sentence.replace('っ', '').replace('ッ', ''))
+
         return False
 
 
@@ -53,6 +72,6 @@ if __name__ == '__main__':
     print(is_joke('遠距離恋愛'))
     print(is_joke('布団が吹っ飛んだ'))
     print(is_joke('つくねがくっつくね'))
-    print(is_joke('ソースを読んで納得したプログラマ「そーすね」'))
     print(is_joke('布団が吹っ飛んだ'))
+    print(is_joke('ソースを読んで納得したプログラマ「そーすね」'))
     print(is_joke('太古の太閤が太鼓で対抗'))
