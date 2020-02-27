@@ -8,6 +8,9 @@ from tensorflow.keras.callbacks import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
+import json
+from tqdm import tqdm
+from engine import *
 
 
 class Evaluate(object):
@@ -20,7 +23,8 @@ class Evaluate(object):
         # -----*----- コンストラクタ -----*----- ##
         # モデルのビルド
         self.__model = self.__build()
-        return
+
+        self.model_path = model_path
 
         if train:
             # 学習
@@ -83,6 +87,40 @@ class Evaluate(object):
             shuffle=True,
         )
 
+        # 最終の学習モデルを保存
+        self.__model.save_weights(self.model_path)
+
+
+    def __features_extracter(self, max_length=100):
+        ## -----*----- 特徴量抽出 -----*----- ##
+        x = [] # 入力
+        y = [] # 正解ラベル
+
+        # ダジャレ読み込み
+        jokes = []
+        jokes = json.load(open('data/raw/jokes.json', 'r'))
+
+        # データセットを作成
+        for joke in tqdm(jokes):
+            katakana = to_katakana(joke['joke'])
+            vec = [ord(x) for x in katakana]
+            vec = vec[:max_length]
+            if len(vec) < max_length:
+                vec += ([0] * (max_length - len(vec)))
+
+            if joke['score'] > 2.5:
+                score = 1.0
+            else:
+                score = 0.0
+
+            x.append(vec)
+            y.append(score)
+
+        x = np.array(x)
+        y = np.array(y)
+
+        return x, y
+
 
     def load_model(self):
         ## -----*----- モデル読み込み -----*----- ##
@@ -91,6 +129,19 @@ class Evaluate(object):
             self.__model.load_weights(self.model_path)
 
 
-if __name__ == '__main__':
-    model = Evaluate()
+    def predict(self, sentence, max_length=100):
+        ## -----*----- 推論 -----*----- ##
+        katakana = to_katakana(sentence)
+        vec = [ord(x) for x in katakana]
+        vec = vec[:max_length]
+        if len(vec) < max_length:
+            vec += ([0] * (max_length - len(vec)))
 
+        score = self.__model.predict(np.array([vec]))
+        print(score)
+
+
+
+if __name__ == '__main__':
+    model = Evaluate(False)
+    model.predict('布団が吹っ飛んだ')
