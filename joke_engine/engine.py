@@ -9,6 +9,7 @@ from tensorflow.keras.optimizers import *
 from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
 import json
+import math
 from tqdm import tqdm
 
 
@@ -137,7 +138,8 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         score = self.__model.predict(np.array([vec]))
-        return score[0][0] * 5.0
+        return 5.0 / (1.0 +  math.e**(-(25*score[0][0]-13)))
+        #return score[0][0] * 5.0
 
 
 
