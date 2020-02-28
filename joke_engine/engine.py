@@ -10,6 +10,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
 import json
 import math
+from kanjize import int2kanji
 from tqdm import tqdm
 
 
@@ -153,6 +154,11 @@ def to_katakana(sentence, rm_ltu=False):
     rm_ltu：「っ」を削除するかどうか
     '''
     katakana = ''
+
+    # 数字 -> 漢数字
+    while re.match('\d+', sentence):
+        c = re.match('\d+', sentence).group()
+        sentence = sentence.replace(c, int2kanji(int(c)))
 
     # 形態素解析
     for token in t.tokenize(sentence):
