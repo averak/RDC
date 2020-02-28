@@ -8,6 +8,7 @@ import sys
 import engine
 import json
 import glob
+import numpy as np
 from tqdm import tqdm
 
 
@@ -36,9 +37,7 @@ if 'evaluate' in sys.argv:
     model = engine.Evaluate(False)
     for joke in tqdm(jokes):
         score = model.predict(joke['joke'])
-        star =  '★' * int(score)
-        if score - int(score) > 0.5:
-            star += '★'
+        star =  '★' * int(np.round(score))
         star += '☆' * (5-len(star))
         judge = engine.is_joke(joke['joke'])
 

@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
     for joke in jokes:
         score = model.predict(joke)
-        star =  '★' * int(score)
+        star =  '★' * int(np.round(score))
         star += '☆' * (5-len(star))
         judge = is_joke(joke)
 
