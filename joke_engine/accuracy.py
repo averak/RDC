@@ -25,8 +25,10 @@ if 'judge' in sys.argv:
         try:
             if joke['is_joke'] == engine.is_joke(joke['joke']):
                 result += 1
+            #else:
+            #    print('判定に失敗：%s' % joke['joke'])
         except:
-            raise ValueError('判定に失敗：%s' % joke['joke'])
+            raise ValueError('エラー発生：%s' % joke['joke'])
 
 
     print('精度：%f' % (result / len(jokes)))

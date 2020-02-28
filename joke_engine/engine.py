@@ -198,8 +198,8 @@ def is_joke(sentence, n=3, rm_ltu=False):
     else:
         if 'ー' in katakana:
             return is_joke(katakana.replace('ー', ''))
-        if 'っ' in sentence or 'ッ' in sentence:
-            if not rm_ltu:
+        if not rm_ltu:
+            if 'っ' in sentence or 'ッ' in sentence:
                 if is_joke(sentence, rm_ltu=True):
                     return True
                 else:
@@ -211,6 +211,8 @@ def is_joke(sentence, n=3, rm_ltu=False):
 if __name__ == '__main__':
     jokes = []
     jokes.append('遠距離恋愛')
+    jokes.append('この皿はサラサラしてる')
+    jokes.append('筋トレで金獲れ')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('つくねがくっつくね')
     jokes.append('布団が吹っ飛んだ')
@@ -228,4 +230,6 @@ if __name__ == '__main__':
         print('{}\n    - ダジャレ判定：{}'.format(joke, judge))
         if judge:
             print('    - ダジャレ評価：{} ({})'.format(star, score))
+        else:
+            print('    - カタカナ変換：%s' % to_katakana(joke))
 
