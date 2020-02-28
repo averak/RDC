@@ -7,13 +7,23 @@
 
 
 ## Usage
-### Fetch All Jokes Data
+### Build
+#### Fetch All Jokes Data
 ```sh
 $ python build.py fetch
 ```
-### Train
+#### Train
 ```sh
 $ python build.py train
+```
+### Django
+#### Run Server
+```sh
+$ python manage.py runserver
+```
+#### Run Test
+```sh
+$ python manage.py test
 ```
 
 
