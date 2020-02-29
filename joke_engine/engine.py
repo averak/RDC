@@ -86,6 +86,7 @@ class Evaluate(object):
             verbose=1,
             validation_split=0.2,
             shuffle=True,
+
         )
 
         # 最終の学習モデルを保存
@@ -154,7 +155,7 @@ class Evaluate(object):
         elif n==5:
             score += 0.3
 
-        if score < 0: score = 0.0
+        if score < 1: score = 1.0
         if score > 5: score = 5.0
 
         return score
