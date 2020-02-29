@@ -148,9 +148,9 @@ class Evaluate(object):
         if   n==2:
             score += -1
         elif n==3:
-            score += 0
+            score += -0.3
         elif n==4:
-            score += 0.2
+            score += 0
         elif n==5:
             score += 0.3
 
