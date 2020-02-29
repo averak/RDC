@@ -22,6 +22,8 @@ class Evaluate(object):
 
     def __init__(self, train=True, model_path='model/model.hdf5'):
         # -----*----- コンストラクタ -----*----- ##
+        # TensorFlowの警告レベルを設定
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
         # モデルのビルド
         self.__model = self.__build()
 
