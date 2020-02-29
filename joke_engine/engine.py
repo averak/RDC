@@ -10,6 +10,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras import Sequential
 import json
 import math
+from kanjize import int2kanji
 from tqdm import tqdm
 
 
@@ -138,8 +139,25 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         score = self.__model.predict(np.array([vec]))
-        return 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
-        #return score[0][0] * 5.0
+        score = 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
+
+        n = 0
+        for i in range(2, 6):
+            if is_joke(sentence, i):
+                n = i
+        if   n==2:
+            score += -1
+        elif n==3:
+            score += -0.3
+        elif n==4:
+            score += 0
+        elif n==5:
+            score += 0.3
+
+        if score < 0: score = 0.0
+        if score > 5: score = 5.0
+
+        return score
 
 
 
@@ -153,6 +171,11 @@ def to_katakana(sentence, rm_ltu=False):
     rm_ltu：「っ」を削除するかどうか
     '''
     katakana = ''
+
+    # 数字 -> 漢数字
+    while re.match('\d+', sentence):
+        c = re.match('\d+', sentence).group()
+        sentence = sentence.replace(c, int2kanji(int(c)))
 
     # 形態素解析
     for token in t.tokenize(sentence):
@@ -198,8 +221,8 @@ def is_joke(sentence, n=3, rm_ltu=False):
     else:
         if 'ー' in katakana:
             return is_joke(katakana.replace('ー', ''))
-        if 'っ' in sentence or 'ッ' in sentence:
-            if not rm_ltu:
+        if not rm_ltu:
+            if 'っ' in sentence or 'ッ' in sentence:
                 if is_joke(sentence, rm_ltu=True):
                     return True
                 else:
@@ -211,6 +234,8 @@ def is_joke(sentence, n=3, rm_ltu=False):
 if __name__ == '__main__':
     jokes = []
     jokes.append('遠距離恋愛')
+    jokes.append('この皿はサラサラしてる')
+    jokes.append('筋トレで金獲れ')
     jokes.append('布団が吹っ飛んだ')
     jokes.append('つくねがくっつくね')
     jokes.append('布団が吹っ飛んだ')
@@ -221,11 +246,13 @@ if __name__ == '__main__':
 
     for joke in jokes:
         score = model.predict(joke)
-        star =  '★' * int(score)
+        star =  '★' * int(np.round(score))
         star += '☆' * (5-len(star))
         judge = is_joke(joke)
 
         print('{}\n    - ダジャレ判定：{}'.format(joke, judge))
         if judge:
             print('    - ダジャレ評価：{} ({})'.format(star, score))
+        else:
+            print('    - カタカナ変換：%s' % to_katakana(joke))
 

@@ -8,6 +8,7 @@ import sys
 import engine
 import json
 import glob
+import numpy as np
 from tqdm import tqdm
 
 
@@ -24,8 +25,10 @@ if 'judge' in sys.argv:
         try:
             if joke['is_joke'] == engine.is_joke(joke['joke']):
                 result += 1
+            #else:
+            #    print('判定に失敗：%s' % joke['joke'])
         except:
-            raise ValueError('判定に失敗：%s' % joke['joke'])
+            raise ValueError('エラー発生：%s' % joke['joke'])
 
 
     print('精度：%f' % (result / len(jokes)))
@@ -36,9 +39,7 @@ if 'evaluate' in sys.argv:
     model = engine.Evaluate(False)
     for joke in tqdm(jokes):
         score = model.predict(joke['joke'])
-        star =  '★' * int(score)
-        if score - int(score) > 0.5:
-            star += '★'
+        star =  '★' * int(np.round(score))
         star += '☆' * (5-len(star))
         judge = engine.is_joke(joke['joke'])
 
