@@ -139,8 +139,25 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         score = self.__model.predict(np.array([vec]))
-        return 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
-        #return score[0][0] * 5.0
+        score = 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
+
+        n = 0
+        for i in range(2, 6):
+            if is_joke(sentence, i):
+                n = i
+        if   n==2:
+            score += -1
+        elif n==3:
+            score += 0
+        elif n==4:
+            score += 0.2
+        elif n==5:
+            score += 0.3
+
+        if score < 0: score = 0.0
+        if score > 5: score = 5.0
+
+        return score
 
 
 
