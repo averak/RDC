@@ -148,7 +148,9 @@ class Evaluate(object):
         for i in range(2, 6):
             if is_joke(sentence, i):
                 n = i
-        if   n==2:
+        if   n<2:
+            score += -1.5
+        elif n==2:
             score += -1
         elif n==3:
             score += -0.3
