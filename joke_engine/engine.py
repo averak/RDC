@@ -22,6 +22,8 @@ class Evaluate(object):
 
     def __init__(self, train=True, model_path='model/model.hdf5'):
         # -----*----- コンストラクタ -----*----- ##
+        # TensorFlowの警告レベルを設定
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
         # モデルのビルド
         self.__model = self.__build()
 
@@ -86,6 +88,7 @@ class Evaluate(object):
             verbose=1,
             validation_split=0.2,
             shuffle=True,
+
         )
 
         # 最終の学習モデルを保存
@@ -145,7 +148,9 @@ class Evaluate(object):
         for i in range(2, 6):
             if is_joke(sentence, i):
                 n = i
-        if   n==2:
+        if   n<2:
+            score += -1.5
+        elif n==2:
             score += -1
         elif n==3:
             score += -0.3
@@ -154,7 +159,7 @@ class Evaluate(object):
         elif n==5:
             score += 0.3
 
-        if score < 0: score = 0.0
+        if score < 1: score = 1.0
         if score > 5: score = 5.0
 
         return score
