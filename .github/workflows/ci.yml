@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - master
+      - develop
 
 jobs:
   build:
@@ -25,10 +26,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-    - name: Install vint
+    - name: Install requirements
       run: |
         cd joke_engine
         pip install -r lib/requirements.txt
-    - name: Test with vint
+    - name: Run Test
       run: |
         python manage.py test
