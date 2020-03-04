@@ -142,7 +142,7 @@ class Evaluate(object):
             vec += ([0] * (max_length - len(vec)))
 
         score = self.__model.predict(np.array([vec]))
-        score = 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
+        score = 5.0 / (1.0 +  math.e**(-(24.4*score[0][0]-12.3)))
 
         n = 0
         for i in range(2, 6):
