@@ -2,7 +2,7 @@
 
 # 立命館ダジャレサークル
 
-[![Build Status](https://api.travis-ci.org/AjxLab/RDC.svg)](https://travis-ci.org/AjxLab/RDC)
+[![ubuntu_ci](https://github.com/AjxLab/RDC/workflows/ubuntu_ci/badge.svg)](https://github.com/AjxLab/RDC/actions)
 [![Twitter](https://img.shields.io/badge/Twitter-%40rits_dajare-blue?style=flat-square&logo=twitter)](https://twitter.com/rits_dajare)
 
 ![](https://raw.githubusercontent.com/Ritsumeikan-Dajare-Circle/media/d72e2dbf8459689384af0de9e8b8d3e2d36a9cd2/logo/source.svg?sanitize=true)
