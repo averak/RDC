@@ -153,7 +153,7 @@ class Evaluate(object):
         elif n==2:
             score += -1
         elif n==3:
-            score += -0.3
+            score += -0.5
         elif n==4:
             score += 0
         elif n==5:
@@ -192,14 +192,15 @@ def to_katakana(sentence, rm_ltu=False):
                 katakana += token.surface
         else:
             # 読みがわかるトークン
-            katakana += s
+            if re.match('[ァ-ン]', s) != None:
+                katakana += s
 
     if rm_ltu:
         katakana = katakana.replace('ッ', '')
 
     pair = [
-        'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ',
-        'アイウエオツヤユヨワアイウエオツヤユヨワ'
+        'ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヂ',
+        'アイウエオツヤユヨワアイウエオツヤユヨワジ'
     ]
     for i in range(len(pair[0])):
         katakana = katakana.replace(pair[0][i], pair[1][i])
