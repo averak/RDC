@@ -50,8 +50,10 @@ function SlackPost(channel, jsonObj, score) {
   
   // 投稿メッセージ生成
   var template_string = "【${time}】\nダジャレ：${joke}\n名前：${name}\n評価：${score}";
-  
-  template_string = template_string.replace("${time}", jsonObj["event_time"]);
+  var date = new Date(Number(jsonObj["event_time"])*1000); // Dateオブジェクト生成
+  var date_string = Utilities.formatDate(date,"JST","yyyy/MM/dd HH:mm:ss");
+
+  template_string = template_string.replace("${time}", date_string);
   template_string = template_string.replace("${joke}", jsonObj["event"]["text"]);
   template_string = template_string.replace("${name}", jsonObj["event"]["user"]);
   template_string = template_string.replace("${score}", score);
