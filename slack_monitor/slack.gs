@@ -1,7 +1,7 @@
-function Slack2SheetPost(jsonObj, score) {
+function slack2SheetPost(jsonObj, score) {
   // スプレットシートに記述する
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
-  var newRow = sheet.getLastRow() + 1;
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
+  const newRow = sheet.getLastRow() + 1;
 
   sheet.getRange(newRow, 1).setValue(jsonObj["event_time"]); // タイムスタンプ
   sheet.getRange(newRow, 2).setValue(jsonObj["event_id"]); // イベントID
@@ -10,17 +10,17 @@ function Slack2SheetPost(jsonObj, score) {
   sheet.getRange(newRow, 5).setValue(score); // score
   sheet.getRange(newRow, 6).setValue(-1); // likes
   sheet.getRange(newRow, 7).setValue("Slack"); // slack or twitter
-  var link = "https://dajarerits.slack.com/archives/" + jsonObj["event"]["channel"] + "/p";
+  const link = "https://dajarerits.slack.com/archives/" + jsonObj["event"]["channel"] + "/p";
   sheet.getRange(newRow, 8).setValue(link + jsonObj["event"]["ts"].replace('.','')); // link
   sheet.getRange(newRow, 9).setValue(""); // 備考
 }
 
-function RegularExpressionJudge(jsonObj, word) {
+function regularExpressionJudge(jsonObj, word) {
   return jsonObj["event"]["text"].match(word);
 }
 
-function SlackValidation(e) {
-  var jsonObj = JSON.parse(e.postData.getDataAsString());
+function slackValidation(e) {
+  const jsonObj = JSON.parse(e.postData.getDataAsString());
 
   // observerの投稿は弾く
   if(jsonObj["event"]["user"] == "UUJQJ0YQG") {
@@ -29,23 +29,23 @@ function SlackValidation(e) {
 
   // slackのchannelに参加した時のイベントを取り除く
   // この場合「<userid>~~~」という文字列がtextに入る
-  var JoinWord = new RegExp("^<@" + jsonObj["event"]["user"] + ">.*");
-  if(RegularExpressionJudge(jsonObj, JoinWord)) {
+  const JoinWord = new RegExp("^<@" + jsonObj["event"]["user"] + ">.*");
+  if(regularExpressionJudge(jsonObj, JoinWord)) {
     return false;
   }
 
   // slackのリアクションイベントは弾く
   // この場合「: ~~~~ :」という文字列がtextに入る
-  var ReactionwWord = new RegExp("^:.*:$");
-  if(RegularExpressionJudge(jsonObj, ReactionwWord)) {
+  const reactionwWord = new RegExp("^:.*:$");
+  if(regularExpressionJudge(jsonObj, reactionwWord)) {
     return false;
   }
   
   // 前回のダジャレとイベントIDが一緒の時は弾く
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
-  var lastRow = sheet.getLastRow();
-  var event_id = sheet.getRange(lastRow, 2).getValue();
-  if(jsonObj["event_id"] == event_id) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
+  const lastRow = sheet.getLastRow();
+  const eventId = sheet.getRange(lastRow, 2).getValue();
+  if(jsonObj["event_id"] == eventId) {
     return false;
   }
 
@@ -57,69 +57,72 @@ function SlackValidation(e) {
   return jsonObj;
 }
 
-function SlackPost(channel, jsonObj, score) {
+function slackPost(channel, jsonObj, evaluateScore) {
   // Slackの特定のチャンネルに投稿
-  var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');  
-  var slackApp = SlackApp.create(token); //SlackApp インスタンスの取得
+  const token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');  
+  const slackApp = SlackApp.create(token); //SlackApp インスタンスの取得
   
   // 投稿メッセージ生成
-  var template_string = "【${time}】\nダジャレ：${joke}\n名前：${name}\n評価：${score}";
-  var date = new Date(Number(jsonObj["event_time"])*1000); // Dateオブジェクト生成
-  var date_string = Utilities.formatDate(date,"JST","yyyy/MM/dd HH:mm:ss");
+  const templateString = "【${time}】\nダジャレ：${joke}\n名前：${name}\n評価：${score}";
+  const date = new Date(Number(jsonObj["event_time"])*1000); // Dateオブジェクト生成
+  const dateString = Utilities.formatDate(date,"JST","yyyy/MM/dd HH:mm:ss");
+  
+  const message = templateString.replace(/\${(time|joke|name|score)}/g, (_, dataType) =>
+  ({
+    time: dateString,
+    joke: jsonObj["event"]["text"],
+    name: jsonObj["event"]["user"],
+    score: `${'★'.repeat(evaluateScore)}${'☆'.repeat(5 - evaluateScore)}`
+  }[dataType]))
 
-  template_string = template_string.replace("${time}", date_string);
-  template_string = template_string.replace("${joke}", jsonObj["event"]["text"]);
-  template_string = template_string.replace("${name}", jsonObj["event"]["user"]);
-  template_string = template_string.replace("${score}", ('★'.repeat(score) + '☆'.repeat(5 - score)));
-
-  var options = {
+  const options = {
     channelId: channel, // チャンネル名
     userName: "obserber", // 投稿するbotの名前
     // 投稿するメッセージ
-    message: template_string,
+    message: message,
   };
 
   // 投稿
   slackApp.postMessage(options.channelId, options.message, {username: options.userName});
 }
 
-function AccessJudgeApi(joke, base_url) {
-  var api_url = "/joke/judge/?joke=";
-  var response = UrlFetchApp.fetch(base_url+ api_url + joke).getContentText();
-  var res_json = JSON.parse(response);
-  return res_json["is_joke"];
+function accessJudgeApi(joke, base_url) {
+  const apiUrl = "/joke/judge/?joke=";
+  const response = UrlFetchApp.fetch(base_url+ apiUrl + joke).getContentText();
+  const resJson = JSON.parse(response);
+  return resJson["is_joke"];
 }
 
-function AccessEvaluateApi(joke, base_url) {
-  var api_url = "/joke/evaluate/?joke=";
-  var response = UrlFetchApp.fetch(base_url+ api_url + joke).getContentText();
-  var res_json = JSON.parse(response);
-  return Math.round(Number(res_json["score"]) * 10) / 10;
+function accessEvaluateApi(joke, base_url) {
+  const apiUrl = "/joke/evaluate/?joke=";
+  const response = UrlFetchApp.fetch(base_url+ apiUrl + joke).getContentText();
+  const resJson = JSON.parse(response);
+  return Math.round(Number(resJson["score"]) * 10) / 10;
 }
 
 function test(jsonObj) {
 
-  var base_url = "https://ee4ac409.ngrok.io";
+  const base_url = "https://ee4ac409.ngrok.io";
 
   // ダジャレ判定APIにアクセス
-  var isjoke = AccessJudgeApi(jsonObj["event"]["text"], base_url);
+  const isjoke = accessJudgeApi(jsonObj["event"]["text"], base_url);
   if(!isjoke) {
     return;
   }
 
   // ダジャレ評価APIにアクセス
-  var score = AccessEvaluateApi(jsonObj["event"]["text"], base_url);
+  const score = accessEvaluateApi(jsonObj["event"]["text"], base_url);
 
   // #ついったーに投稿
-  var twitter_score = Math.round(score);
-  SlackPost("#ついったー", jsonObj, twitter_score);
+  const twitterScore = Math.round(score);
+  slackPost("#ついったー", jsonObj, twitterScore);
 
   // スプレットシートに保存
-  Slack2SheetPost(jsonObj, score);
+  slack2SheetPost(jsonObj, score);
 }
 
 function doPost(e) {
-  var jsonObj = SlackValidation(e);
+  const jsonObj = slackValidation(e);
   if(jsonObj != false) {
     test(jsonObj);
   }
