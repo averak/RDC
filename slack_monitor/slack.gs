@@ -56,12 +56,12 @@ function SlackPost(channel, jsonObj, score) {
   template_string = template_string.replace("${time}", date_string);
   template_string = template_string.replace("${joke}", jsonObj["event"]["text"]);
   template_string = template_string.replace("${name}", jsonObj["event"]["user"]);
-  template_string = template_string.replace("${score}", score);
+  template_string = template_string.replace("${score}", ('★'.repeat(score) + '☆'.repeat(5 - score)));
 
   var options = {
-    channelId: channel, //チャンネル名
-    userName: "obserber", //投稿するbotの名前
-    //投稿するメッセージ
+    channelId: channel, // チャンネル名
+    userName: "obserber", // 投稿するbotの名前
+    // 投稿するメッセージ
     message: template_string,
   };
 
@@ -69,18 +69,33 @@ function SlackPost(channel, jsonObj, score) {
   slackApp.postMessage(options.channelId, options.message, {username: options.userName});
 }
 
+function AccessJudgeApi(joke) {
+  var base_url = "https://3019df2d.ngrok.io/joke/judge/?joke=";
+  var response = UrlFetchApp.fetch(base_url + joke).getContentText();
+  var res_json = JSON.parse(response);
+  return res_json["is_joke"];
+}
+
+function AccessEvaluateApi(joke) {
+  var base_url = "https://3019df2d.ngrok.io/joke/evaluate/?joke=";
+  var response = UrlFetchApp.fetch(base_url + joke).getContentText();
+  var res_json = JSON.parse(response);
+  return Math.round(Number(res_json["score"]) * 10) / 10;
+}
+
 function test(jsonObj) {
   // ダジャレ判定APIにアクセス
-  var isjoke = true;
+  var isjoke = AccessJudgeApi(jsonObj["event"]["text"]);
   if(!isjoke) {
     return;
   }
 
   // ダジャレ評価APIにアクセス
-  var score = 3.5;
+  var score = AccessEvaluateApi(jsonObj["event"]["text"]);
 
   // #ついったーに投稿
-  SlackPost("#ついったー", jsonObj, score);
+  var twitter_score = Math.round(score);
+  SlackPost("#ついったー", jsonObj, twitter_score);
 
   // スプレットシートに保存
   Slack2SheetPost(jsonObj, score);
