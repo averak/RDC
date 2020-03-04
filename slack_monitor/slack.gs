@@ -15,31 +15,45 @@ function Slack2SheetPost(jsonObj, score) {
   sheet.getRange(newRow, 9).setValue(""); // 備考
 }
 
-function SlackJoinEvent(jsonObj) {
-  // slackのchannelに参加/退出イベントか判定する
-  // この場合「<userid>~~~」という文字列がtextに入る
-
-  var userId = jsonObj["event"]["user"];
-  var word = new RegExp("^<@" + userId + ">.*");
-
-  if(jsonObj["event"]["text"].match(word)) {
-    return true;
-  } else {
-    return false;
-  }
+function RegularExpressionJudge(jsonObj, word) {
+  return jsonObj["event"]["text"].match(word);
 }
 
 function SlackValidation(e) {
   var jsonObj = JSON.parse(e.postData.getDataAsString());
 
-  // slackのchannelに参加した時のイベントを取り除く
-  if(SlackJoinEvent(jsonObj)) {
-    return false;
-  }
   // observerの投稿は弾く
   if(jsonObj["event"]["user"] == "UUJQJ0YQG") {
     return false;
   }
+
+  // slackのchannelに参加した時のイベントを取り除く
+  // この場合「<userid>~~~」という文字列がtextに入る
+  var JoinWord = new RegExp("^<@" + jsonObj["event"]["user"] + ">.*");
+  if(RegularExpressionJudge(jsonObj, JoinWord)) {
+    return false;
+  }
+
+  // slackのリアクションイベントは弾く
+  // この場合「: ~~~~ :」という文字列がtextに入る
+  var ReactionwWord = new RegExp("^:.*:$");
+  if(RegularExpressionJudge(jsonObj, ReactionwWord)) {
+    return false;
+  }
+  
+  // 前回のダジャレとイベントIDが一緒の時は弾く
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
+  var lastRow = sheet.getLastRow();
+  var event_id = sheet.getRange(lastRow, 2).getValue();
+  if(jsonObj["event_id"] == event_id) {
+    return false;
+  }
+
+  // bottest,ダジャレチャンネル以外からのアクセスは弾く
+  if(jsonObj["event"]["channel"] != "CTZKSMLCA" && jsonObj["event"]["channel"] != "CU8LLRTEV") {
+    return false;
+  }
+
   return jsonObj;
 }
 
@@ -69,29 +83,32 @@ function SlackPost(channel, jsonObj, score) {
   slackApp.postMessage(options.channelId, options.message, {username: options.userName});
 }
 
-function AccessJudgeApi(joke) {
-  var base_url = "https://3019df2d.ngrok.io/joke/judge/?joke=";
-  var response = UrlFetchApp.fetch(base_url + joke).getContentText();
+function AccessJudgeApi(joke, base_url) {
+  var api_url = "/joke/judge/?joke=";
+  var response = UrlFetchApp.fetch(base_url+ api_url + joke).getContentText();
   var res_json = JSON.parse(response);
   return res_json["is_joke"];
 }
 
-function AccessEvaluateApi(joke) {
-  var base_url = "https://3019df2d.ngrok.io/joke/evaluate/?joke=";
-  var response = UrlFetchApp.fetch(base_url + joke).getContentText();
+function AccessEvaluateApi(joke, base_url) {
+  var api_url = "/joke/evaluate/?joke=";
+  var response = UrlFetchApp.fetch(base_url+ api_url + joke).getContentText();
   var res_json = JSON.parse(response);
   return Math.round(Number(res_json["score"]) * 10) / 10;
 }
 
 function test(jsonObj) {
+
+  var base_url = "https://ee4ac409.ngrok.io";
+
   // ダジャレ判定APIにアクセス
-  var isjoke = AccessJudgeApi(jsonObj["event"]["text"]);
+  var isjoke = AccessJudgeApi(jsonObj["event"]["text"], base_url);
   if(!isjoke) {
     return;
   }
 
   // ダジャレ評価APIにアクセス
-  var score = AccessEvaluateApi(jsonObj["event"]["text"]);
+  var score = AccessEvaluateApi(jsonObj["event"]["text"], base_url);
 
   // #ついったーに投稿
   var twitter_score = Math.round(score);
