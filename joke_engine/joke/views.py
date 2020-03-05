@@ -71,3 +71,35 @@ def joke_evaluate(request):
 
     ret = {'score': model.predict(params['joke'])}
     return JsonResponse(ret)
+
+
+
+def joke_reading(request):
+    ## -----*----- ダジャレをカタカナ変換 -----*----- ##
+    '''
+    uri：
+        /joke/reading
+    method：
+        GET
+    headers：
+        'Content-Type':'application/json'
+    query：
+        joke: String,
+    response：
+        {
+            reading: String
+        }
+    '''
+
+    # パラメータを辞書で取得
+    params = request.GET
+
+    # GET以外でアクセス -> return {}
+    if request.method != 'GET':
+        return JsonResponse({})
+    # クエリを指定されていない -> return {}
+    if not 'joke' in params:
+        return JsonResponse({})
+
+    ret = {'reading': engine.to_katakana(params['joke'])}
+    return JsonResponse(ret)
