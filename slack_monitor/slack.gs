@@ -1,3 +1,5 @@
+const JUDGE_API_BASE_URL = "http://abelab.dev:8080";
+
 function slack2SheetPost(jsonObj, score) {
   // スプレットシートに記述する
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('index');
@@ -5,7 +7,7 @@ function slack2SheetPost(jsonObj, score) {
 
   sheet.getRange(newRow, 1).setValue(jsonObj["event_time"]); // タイムスタンプ
   sheet.getRange(newRow, 2).setValue(jsonObj["event_id"]); // イベントID
-  sheet.getRange(newRow, 3).setValue(jsonObj["event"]["user"]); // ユーザーID
+  sheet.getRange(newRow, 3).setValue(jsonObj["event"]["name"]); // ユーザーID
   sheet.getRange(newRow, 4).setValue(jsonObj["event"]["text"]); // 本文
   sheet.getRange(newRow, 5).setValue(score); // score
   sheet.getRange(newRow, 6).setValue(-1); // likes
@@ -66,14 +68,11 @@ function slackPost(channel, jsonObj, evaluateScore) {
   const templateString = "【${time}】\nダジャレ：${joke}\n名前：${name}\n評価：${score}";
   const date = new Date(Number(jsonObj["event_time"])*1000); // Dateオブジェクト生成
   const dateString = Utilities.formatDate(date,"JST","yyyy/MM/dd HH:mm:ss");
-  
-  const message = templateString.replace(/\${(time|joke|name|score)}/g, (_, dataType) =>
-  ({
-    time: dateString,
-    joke: jsonObj["event"]["text"],
-    name: jsonObj["event"]["user"],
-    score: `${'★'.repeat(evaluateScore)}${'☆'.repeat(5 - evaluateScore)}`
-  }[dataType]))
+
+  const message = templateString.replace("${time}", dateString)
+                                 .replace("${joke}", jsonObj["event"]["text"])
+                                 .replace("${name}", jsonObj["event"]["name"])
+                                 .replace("${score}", evaluateScore);
 
   const options = {
     channelId: channel, // チャンネル名
@@ -100,30 +99,59 @@ function accessEvaluateApi(joke, base_url) {
   return Math.round(Number(resJson["score"]) * 10) / 10;
 }
 
+function iD2Name(id) {
+  const token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');  
+  const slackApp = SlackApp.create(token); //SlackApp インスタンスの取得
+  const userinfo = slackApp.usersInfo(id);
+
+  return userinfo["user"]["profile"]["display_name"];
+}
+
 function test(jsonObj) {
 
-  const base_url = "https://ee4ac409.ngrok.io";
+  const base_url = JUDGE_API_BASE_URL;
 
   // ダジャレ判定APIにアクセス
-  const isjoke = accessJudgeApi(jsonObj["event"]["text"], base_url);
-  if(!isjoke) {
-    return;
-  }
+  //const isjoke = accessJudgeApi(jsonObj["event"]["text"], base_url);
+  //if(!isjoke) {
+  //  return;
+  //}
 
   // ダジャレ評価APIにアクセス
-  const score = accessEvaluateApi(jsonObj["event"]["text"], base_url);
-
+  //const score = accessEvaluateApi(jsonObj["event"]["text"], base_url);
+  const score = 10000; // ここあとでtry-catchしておく
+  
+  // ユーザーの表示名を追加
+  jsonObj["event"]["name"] = iD2Name(jsonObj["event"]["user"]);
+  
   // #ついったーに投稿
   const twitterScore = Math.round(score);
   slackPost("#ついったー", jsonObj, twitterScore);
-
+  
   // スプレットシートに保存
   slack2SheetPost(jsonObj, score);
 }
 
-function doPost(e) {
-  const jsonObj = slackValidation(e);
-  if(jsonObj != false) {
-    test(jsonObj);
+//function doPost(e) {
+//  console.log("aaa");
+//  let jsonObj = slackValidation(e);
+//  if(jsonObj != false) {
+//    test(jsonObj);
+//  }
+//}
+
+function doPost(e){
+  try{
+    let jsonObj = slackValidation(e);
+    if(jsonObj != false) {
+      test(jsonObj);
+    }
   }
+  catch(o_O){
+    console.log(o_O.message); throw o_O;
+  }
+}
+
+const debug = () => {
+  console.log(accessJudgeApi("布団がふっとん", JUDGE_API_BASE_URL))
 }
