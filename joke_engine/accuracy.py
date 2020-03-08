@@ -17,7 +17,6 @@ jokes = []
 for file in glob.glob('data/raw/*.json'):
     jokes.extend(json.load(open(file, 'r')))
 
-
 # 判定モデルの計測
 if 'judge' in sys.argv:
     result = 0  # 正解数
@@ -33,17 +32,26 @@ if 'judge' in sys.argv:
 
     print('精度：%f' % (result / len(jokes)))
 
-
 # 評価モデルの計測
 if 'evaluate' in sys.argv:
     model = engine.Evaluate(False)
+    scores = []
+    map_score = [0, 0, 0, 0, 0]
     for joke in tqdm(jokes):
-        score = model.predict(joke['joke'])
-        star =  '★' * int(np.round(score))
-        star += '☆' * (5-len(star))
-        judge = engine.is_joke(joke['joke'])
+        if joke['is_joke']:
+            score = model.predict(joke['joke'])
+            scores.append(score)
+            map_score[int(np.round(score))-1] += 1
+            #'''
+            star =  '★' * int(np.round(score))
+            star += '☆' * (5-len(star))
+            judge = engine.is_joke(joke['joke'])
 
-        print('{}\n    - ダジャレ判定：{}'.format(joke['joke'], judge))
-        if judge:
-            print('    - ダジャレ評価：{} ({})'.format(star, score))
+            print('{}\n    - ダジャレ判定：{}'.format(joke['joke'], judge))
+            if judge:
+                print('    - ダジャレ評価：{} ({})'.format(star, score))
+            #'''
+
+    print('最大値：{}，最小値：{}'.format(max(scores), min(scores)))
+    print(list(100*np.array(map_score)/len(jokes)))
 
