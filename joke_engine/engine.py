@@ -61,7 +61,8 @@ class Evaluate(object):
         fc1 = Dense(64, activation='relu')(reshape)
         bn1 = BatchNormalization()(fc1)
         do1 = Dropout(0.5)(bn1)
-        fc2 = Dense(1, activation='sigmoid')(do1)
+        #fc2 = Dense(1, activation='sigmoid')(do1)
+        fc2 = Dense(5, activation='softmax')(do1)
 
         # Model generate
         model = Model(
@@ -72,14 +73,15 @@ class Evaluate(object):
         # モデルをコンパイル
         model.compile(
             optimizer=Adam(lr=learning_rate),
-            loss='binary_crossentropy',
+            #loss='binary_crossentropy',
+            loss='sparse_categorical_crossentropy',
             metrics=["accuracy"]
         )
 
         return model
 
 
-    def __train(self, x, y, batch_size=1000, epoch_count=1, max_length=30):
+    def __train(self, x, y, batch_size=1000, epoch_count=50, max_length=30):
         ## -----*----- 学習 -----*----- ##
         self.__model.fit(
             x, y,
@@ -88,7 +90,6 @@ class Evaluate(object):
             verbose=1,
             validation_split=0.2,
             shuffle=True,
-
         )
 
         # 最終の学習モデルを保存
@@ -112,10 +113,15 @@ class Evaluate(object):
             if len(vec) < max_length:
                 vec += ([0] * (max_length - len(vec)))
 
+            '''
             if joke['score'] > 2.5:
                 score = 1.0
             else:
                 score = 0.0
+            '''
+            score = int(np.round(joke['score']))
+            if score < 0: score = 0
+            if score > 4: score = 4
 
             x.append(vec)
             y.append(score)
@@ -141,23 +147,10 @@ class Evaluate(object):
         if len(vec) < max_length:
             vec += ([0] * (max_length - len(vec)))
 
-        score = self.__model.predict(np.array([vec]))
-        score = 5.0 / (1.0 +  math.e**(-(25*score[0][0]-12.3)))
-
-        n = 0
-        for i in range(2, 6):
-            if is_joke(sentence, i):
-                n = i
-        if   n<2:
-            score += -1.5
-        elif n==2:
-            score += -1
-        elif n==3:
-            score += -0.5
-        elif n==4:
-            score += 0
-        elif n==5:
-            score += 0.3
+        pred = self.__model.predict(np.array([vec]))[0]
+        bias = np.array(pred) * np.array([1.0, 0.5, 0.0, -0.5, -1.0])
+        pred *= np.array([23200.0, 2320.0, 17.1, 1.0, 193.3])
+        score = np.argmax(pred) + np.sum(bias) + 1.0
 
         if score < 1: score = 1.0
         if score > 5: score = 5.0
