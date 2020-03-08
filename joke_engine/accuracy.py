@@ -16,7 +16,6 @@ from tqdm import tqdm
 jokes = []
 for file in glob.glob('data/raw/*.json'):
     jokes.extend(json.load(open(file, 'r')))
-jokes = json.load(open('data/raw/jokes.json', 'r'))[:500]
 
 # 判定モデルの計測
 if 'judge' in sys.argv:
