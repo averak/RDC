@@ -3,6 +3,6 @@ djangorestframework==3.11.0
 pycrawl==1.1.0
 tqdm==4.41.1
 Janome==0.3.10
-tensorflow==2.1.2
+tensorflow==2.6.4
 kanjize==0.1.0
 django-sslserver
